@@ -17,13 +17,13 @@ import java.util.List;
 public class StudentController {
 
     @Inject
-    private SchoolAccessLocal sal;
+    private SchoolAccessLocal schoolAccessLocal;
 
     @GET
     @Produces({"application/JSON"})
     public Response showStudents() {
         try {
-            List students = sal.listAllStudents();
+            List students = schoolAccessLocal.listAllStudents();
             return Response.ok(students).build();
         } catch ( Exception e ) {
             return Response.status(Response.Status.CONFLICT).build();
@@ -40,7 +40,7 @@ public class StudentController {
     public Response addStudent(String studentModel) {
         try {
 
-            StudentModel answer = sal.addStudent(studentModel);
+            StudentModel answer = schoolAccessLocal.addStudent(studentModel);
 
             switch ( answer.getForename()) {
                 case "empty":
@@ -59,7 +59,7 @@ public class StudentController {
     @Path("{email}")
     public Response deleteUser( @PathParam("email") String email) {
         try {
-            sal.removeStudent(email);
+            schoolAccessLocal.removeStudent(email);
             return Response.ok().build();
         } catch ( Exception e ) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -67,9 +67,9 @@ public class StudentController {
     }
 
     @PUT
-    public void updateStudent( @QueryParam("forename") String forename, @QueryParam("lastname") String lastname, @QueryParam("email") String email) {
+    public Response updateStudent( @QueryParam("foreName") String foreName, @QueryParam("lastName") String lastName, @QueryParam("email") String email) {
         sal.updateStudent(forename, lastname, email);
-    }
+            schoolAccessLocal.updateStudent(foreName, lastName, email);
 
     @PATCH
     public void updatePartialAStudent(String studentModel) {

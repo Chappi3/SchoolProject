@@ -1,7 +1,6 @@
 package se.alten.schoolproject.entity;
 
 import lombok.*;
-import se.alten.schoolproject.model.StudentModel;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -17,37 +16,37 @@ import java.io.StringReader;
 @Getter
 @Setter
 @ToString
-public class Student implements Serializable {
+public class StudentEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "forename")
-    private String forename;
+    @Column(name = "foreName")
+    private String foreName;
 
-    @Column(name = "lastname")
-    private String lastname;
+    @Column(name = "lastName")
+    private String lastName;
 
     @Column(name = "email", unique = true)
     private String email;
 
-    public Student toEntity(String studentModel) {
+    public StudentEntity toEntity(String studentModel) {
         JsonReader reader = Json.createReader(new StringReader(studentModel));
 
         JsonObject jsonObject = reader.readObject();
 
-        Student student = new Student();
-        if ( jsonObject.containsKey("forename")) {
-            student.setForename(jsonObject.getString("forename"));
+        StudentEntity student = new StudentEntity();
+        if ( jsonObject.containsKey("foreName")) {
+            student.setForeName(jsonObject.getString("foreName"));
         } else {
-            student.setForename("");
+            student.setForeName("");
         }
 
-        if ( jsonObject.containsKey("lastname")) {
-            student.setLastname(jsonObject.getString("lastname"));
+        if ( jsonObject.containsKey("lastName")) {
+            student.setLastName(jsonObject.getString("lastName"));
         } else {
-            student.setLastname("");
+            student.setLastName("");
         }
 
         if ( jsonObject.containsKey("email")) {

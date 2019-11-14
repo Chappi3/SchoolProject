@@ -1,6 +1,6 @@
 package se.alten.schoolproject.dao;
 
-import se.alten.schoolproject.entity.Student;
+import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
 
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 @Stateless
 public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
-    private Student student = new Student();
+    private StudentEntity studentEntity = new StudentEntity();
     private StudentModel studentModel = new StudentModel();
 
     @Inject
@@ -25,8 +25,8 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public StudentModel addStudent(String newStudent) {
-        Student studentToAdd = student.toEntity(newStudent);
-        boolean checkForEmptyVariables = Stream.of(studentToAdd.getForename(), studentToAdd.getLastname(), studentToAdd.getEmail()).anyMatch(String::isBlank);
+        StudentEntity studentToAdd = studentEntity.toEntity(newStudent);
+        boolean checkForEmptyVariables = Stream.of(studentToAdd.getForeName(), studentToAdd.getLastName(), studentToAdd.getEmail()).anyMatch(String::isBlank);
 
         if (checkForEmptyVariables) {
             studentToAdd.setForename("empty");
@@ -43,8 +43,8 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public void updateStudent(String forename, String lastname, String email) {
-        studentTransactionAccess.updateStudent(forename, lastname, email);
+    public void updateStudent(String foreName, String lastName, String email) {
+        studentTransactionAccess.updateStudent(foreName, lastName, email);
     }
 
     @Override

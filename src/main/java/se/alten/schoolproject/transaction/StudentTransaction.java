@@ -1,6 +1,6 @@
 package se.alten.schoolproject.transaction;
 
-import se.alten.schoolproject.entity.Student;
+import se.alten.schoolproject.entity.StudentEntity;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -24,21 +24,22 @@ public class StudentTransaction implements StudentTransactionAccess{
     }
 
     @Override
-    public Student addStudent(Student studentToAdd) {
+    public StudentEntity addStudent(StudentEntity studentToAdd) {
         try {
             entityManager.persist(studentToAdd);
             entityManager.flush();
             return studentToAdd;
         } catch ( PersistenceException pe ) {
             studentToAdd.setForename("duplicate");
+            studentToAdd.setForeName("duplicate");
             return studentToAdd;
         }
     }
 
     @Override
-    public void removeStudent(String student) {
+    public void removeStudent(String email) {
         //JPQL Query
-        Query query = entityManager.createQuery("DELETE FROM Student s WHERE s.email = :email");
+        query.setParameter("email", email)
 
         //Native Query
         //Query query = entityManager.createNativeQuery("DELETE FROM student WHERE email = :email", Student.class);
@@ -48,10 +49,10 @@ public class StudentTransaction implements StudentTransactionAccess{
     }
 
     @Override
-    public void updateStudent(String forename, String lastname, String email) {
-        Query updateQuery = entityManager.createNativeQuery("UPDATE student SET forename = :forename, lastname = :lastname WHERE email = :email", Student.class);
-        updateQuery.setParameter("forename", forename)
-                   .setParameter("lastname", lastname)
+    public void updateStudent(String foreName, String lastName, String email) {
+        Query updateQuery = entityManager.createQuery("UPDATE StudentEntity s SET s.foreName = :foreName, s.lastName = :lastName WHERE s.email = :email");
+        updateQuery.setParameter("foreName", foreName)
+                   .setParameter("lastName", lastName)
                    .setParameter("email", email)
                    .executeUpdate();
     }

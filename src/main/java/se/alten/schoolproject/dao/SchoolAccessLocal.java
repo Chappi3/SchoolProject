@@ -7,14 +7,8 @@ import java.util.List;
 
 @Local
 public interface SchoolAccessLocal {
-
     List listAllStudents() throws Exception;
-
     StudentModel addStudent(String studentModel);
-
     void removeStudent(String student);
-
-    void updateStudent(String forename, String lastname, String email);
-
-    void updateStudentPartial(String studentModel);
+    void updateStudent(String foreName, String lastName, String email);
 }
