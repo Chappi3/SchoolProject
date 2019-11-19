@@ -13,4 +13,5 @@ public interface SchoolAccessLocal {
     StudentModel addStudent(String studentModel) throws BadRequestException;
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
+    List findStudent(String foreName, String lastName);
 }

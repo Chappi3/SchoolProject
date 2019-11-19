@@ -37,6 +37,24 @@ public class StudentController {
         }
     }
 
+    @GET
+    @Path("/find")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findStudent(String jsonData) {
+        String foreName = readJsonForeName(jsonData);
+        String lastName = readJsonLastName(jsonData);
+        if (foreName.isBlank() && lastName.isBlank()) {
+            try {
+                throw new BadRequestException("No data");
+            } catch (BadRequestException e) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+        }
+        List result = schoolAccessLocal.findStudent(foreName, lastName);
+        return Response.ok(result).build();
+    }
+
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)

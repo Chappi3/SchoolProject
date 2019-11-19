@@ -13,5 +13,5 @@ public interface StudentTransactionAccess {
     void addStudent(StudentEntity studentToAdd) throws BadRequestException;
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
-    void updateStudentPartial(Student studentToUpdate);
+    List findStudent(String foreName, String lastName);
 }

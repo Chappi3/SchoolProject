@@ -75,9 +75,23 @@ public class StudentTransaction implements StudentTransactionAccess{
     }
 
     @Override
-    public void updateStudentPartial(Student student) {
-        Student studentFound = (Student)entityManager.createQuery("SELECT s FROM Student s WHERE s.email = :email")
-                .setParameter("email", student.getEmail()).getSingleResult();
+    public List findStudent(String foreName, String lastName) {
+        if (lastName.isBlank()) {
+            Query query = entityManager.createQuery("SELECT s FROM StudentEntity s WHERE s.foreName = :foreName")
+                    .setParameter("foreName", foreName);
+            return query.getResultList();
+        }
+        else if (foreName.isBlank()) {
+            Query query = entityManager.createQuery("SELECT s FROM StudentEntity s WHERE s.lastName = :lastName")
+                    .setParameter("lastName", lastName);
+            return query.getResultList();
+        }
+        else {
+            Query query = entityManager.createQuery("SELECT s FROM StudentEntity s WHERE s.foreName = :foreName AND s.lastName = :lastName")
+                    .setParameter("foreName", foreName)
+                    .setParameter("lastName", lastName);
+            return query.getResultList();
+        }
     }
 
     private boolean isEmailExist(String email) {
