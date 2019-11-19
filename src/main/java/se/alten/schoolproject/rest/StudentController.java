@@ -2,6 +2,7 @@ package se.alten.schoolproject.rest;
 
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
+import se.alten.schoolproject.exceptions.BadRequestException;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
@@ -34,25 +35,14 @@ public class StudentController {
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({"application/JSON"})
-    /**
-     * JavaDoc
-     */
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addStudent(String studentModel) {
         try {
-
             StudentModel answer = schoolAccessLocal.addStudent(studentModel);
-
-            switch ( answer.getForename()) {
-                case "empty":
-                    return Response.status(Response.Status.NOT_ACCEPTABLE).entity("{\"Fill in all details please\"}").build();
-                case "duplicate":
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("{\"Email already registered!\"}").build();
-                default:
-                    return Response.ok(answer).build();
-            }
-        } catch ( Exception e ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.CREATED).entity(answer).build();
+        }
+        catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
