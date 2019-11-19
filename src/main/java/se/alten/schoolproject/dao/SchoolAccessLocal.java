@@ -15,18 +15,6 @@ public interface SchoolAccessLocal {
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
     List findStudent(String foreName, String lastName);
-
-    List listAllStudents();
-
-    StudentModel addStudent(String studentModel);
-
-    void removeStudent(String student);
-
-    void updateStudent(String forename, String lastname, String email);
-
-    void updateStudentPartial(String studentModel);
-
     List listAllSubjects();
-
     SubjectModel addSubject(String subjectModel);
 }
