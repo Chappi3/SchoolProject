@@ -3,7 +3,6 @@ package se.alten.schoolproject.dao;
 import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.exceptions.BadRequestException;
 import se.alten.schoolproject.exceptions.NotFoundException;
-import se.alten.schoolproject.entity.Student;
 import se.alten.schoolproject.entity.Subject;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
@@ -50,9 +49,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
             List<Subject> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
 
-            subjects.forEach(sub -> {
-                studentToAdd.getSubject().add(sub);
-            });
+            subjects.forEach(sub -> studentToAdd.getSubject().add(sub));
 
             return studentModel.toModel(studentToAdd);
         }
