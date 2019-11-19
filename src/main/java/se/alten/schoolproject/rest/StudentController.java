@@ -65,12 +65,28 @@ public class StudentController {
     }
 
     @PUT
-    public Response updateStudent( @QueryParam("foreName") String foreName, @QueryParam("lastName") String lastName, @QueryParam("email") String email) {
-        sal.updateStudent(forename, lastname, email);
-            schoolAccessLocal.updateStudent(foreName, lastName, email);
+    @Path("/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateStudent(String jsonData) {
+        try {
+            String email = readJsonEmail(jsonData);
+            String foreName = readJsonForeName(jsonData);
+            String lastName = readJsonLastName(jsonData);
+            if (foreName.isBlank() && lastName.isBlank()) {
+                throw new BadRequestException("No data");
+            }
+            else {
+                schoolAccessLocal.updateStudent(foreName, lastName, email);
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
 
-    @PATCH
-    public void updatePartialAStudent(String studentModel) {
-        sal.updateStudentPartial(studentModel);
+        }
+        catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
+
 }
