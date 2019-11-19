@@ -1,13 +1,12 @@
 package se.alten.schoolproject.transaction;
 
 import se.alten.schoolproject.entity.StudentEntity;
+import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.NotFoundException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.List;
 
 @Stateless
@@ -19,52 +18,72 @@ public class StudentTransaction implements StudentTransactionAccess{
 
     @Override
     public List listAllStudents() {
-        Query query = entityManager.createQuery("SELECT s from Student s");
+        Query query = entityManager.createQuery("SELECT s FROM StudentEntity s");
         return query.getResultList();
     }
 
     @Override
-    public StudentEntity addStudent(StudentEntity studentToAdd) {
+    public void addStudent(StudentEntity studentToAdd) throws BadRequestException {
         try {
             entityManager.persist(studentToAdd);
             entityManager.flush();
-            return studentToAdd;
-        } catch ( PersistenceException pe ) {
-            studentToAdd.setForename("duplicate");
-            studentToAdd.setForeName("duplicate");
-            return studentToAdd;
+        } catch (PersistenceException e) {
+            throw new BadRequestException("Email already exists");
         }
     }
 
     @Override
-    public void removeStudent(String email) {
-        //JPQL Query
-        query.setParameter("email", email)
-
-        //Native Query
-        //Query query = entityManager.createNativeQuery("DELETE FROM student WHERE email = :email", Student.class);
-
-        query.setParameter("email", student)
-             .executeUpdate();
+    public void removeStudent(String email) throws NotFoundException {
+        if (isEmailExist(email)) {
+            Query query = entityManager.createQuery("DELETE FROM StudentEntity s WHERE s.email = :email");
+            query.setParameter("email", email).executeUpdate();
+        }
+        else {
+            throw new NotFoundException("Email not found");
+        }
     }
 
     @Override
-    public void updateStudent(String foreName, String lastName, String email) {
-        Query updateQuery = entityManager.createQuery("UPDATE StudentEntity s SET s.foreName = :foreName, s.lastName = :lastName WHERE s.email = :email");
-        updateQuery.setParameter("foreName", foreName)
-                   .setParameter("lastName", lastName)
-                   .setParameter("email", email)
-                   .executeUpdate();
+    public void updateStudent(String foreName, String lastName, String email) throws NotFoundException {
+        if (isEmailExist(email)) {
+            if (foreName.isBlank()) {
+                Query updateQuery = entityManager.createQuery("UPDATE StudentEntity s SET s.lastName = :lastName WHERE s.email = :email");
+
+                updateQuery.setParameter("lastName", lastName)
+                        .setParameter("email", email)
+                        .executeUpdate();
+            }
+            else if (lastName.isBlank()) {
+                Query updateQuery = entityManager.createQuery("UPDATE StudentEntity s SET s.foreName = :foreName WHERE s.email = :email");
+
+                updateQuery.setParameter("foreName", foreName)
+                        .setParameter("email", email)
+                        .executeUpdate();
+            }
+            else {
+                Query updateQuery = entityManager.createQuery("UPDATE StudentEntity s SET s.foreName = :foreName, s.lastName = :lastName WHERE s.email = :email");
+
+                updateQuery.setParameter("foreName", foreName)
+                        .setParameter("lastName", lastName)
+                        .setParameter("email", email)
+                        .executeUpdate();
+            }
+        }
+        else {
+            throw new NotFoundException("Email not found");
+        }
     }
 
     @Override
     public void updateStudentPartial(Student student) {
         Student studentFound = (Student)entityManager.createQuery("SELECT s FROM Student s WHERE s.email = :email")
                 .setParameter("email", student.getEmail()).getSingleResult();
+    }
 
-        Query query = entityManager.createQuery("UPDATE Student SET forename = :studentForename WHERE email = :email");
-        query.setParameter("studentForename", student.getForename())
-                .setParameter("email", studentFound.getEmail())
-                .executeUpdate();
+    private boolean isEmailExist(String email) {
+        Long count = (Long) entityManager.createQuery("SELECT COUNT(s) FROM StudentEntity s WHERE s.email = :email")
+                .setParameter("email", email)
+                .getSingleResult();
+        return (!count.equals(0L));
     }
 }
