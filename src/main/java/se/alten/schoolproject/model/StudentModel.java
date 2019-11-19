@@ -16,13 +16,18 @@ import java.util.Set;
 @ToString
 public class StudentModel {
 
-    private String forename;
-    private String lastname;
+    private Long id;
+    private String foreName;
+    private String lastName;
     private String email;
     private Set<String> subjects = new HashSet<>();
 
-    public StudentModel toModel(Student student) {
+    public StudentModel toModel(StudentEntity student) {
         StudentModel studentModel = new StudentModel();
+        studentModel.setForeName(student.getForeName());
+        studentModel.setLastName(student.getLastName());
+        studentModel.setEmail(student.getEmail());
+        return studentModel;
 
         switch (student.getForename()) {
             case "empty":
