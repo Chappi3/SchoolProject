@@ -25,8 +25,6 @@ public class StudentController {
         try {
             List students = schoolAccessLocal.listAllStudents();
             return Response.ok(students).build();
-        } catch ( Exception e ) {
-            return Response.status(Response.Status.CONFLICT).build();
         }
         catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
