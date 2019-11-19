@@ -3,6 +3,7 @@ package se.alten.schoolproject.rest;
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.NotFoundException;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
@@ -47,13 +48,19 @@ public class StudentController {
     }
 
     @DELETE
-    @Path("{email}")
-    public Response deleteUser( @PathParam("email") String email) {
+    @Path("/remove")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removeStudent(String jsonEmail) {
         try {
+            String email = readJsonEmail(jsonEmail);
             schoolAccessLocal.removeStudent(email);
-            return Response.ok().build();
-        } catch ( Exception e ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+        catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
+        catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
