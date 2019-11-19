@@ -17,18 +17,9 @@ public class StudentModel {
 
     public StudentModel toModel(StudentEntity student) {
         StudentModel studentModel = new StudentModel();
-        switch (student.getForeName()) {
-            case "empty":
-                studentModel.setForeName("empty");
-                return studentModel;
-            case "duplicate":
-                studentModel.setForeName("duplicate");
-                return studentModel;
-            default:
-                studentModel.setForeName(student.getForeName());
-                studentModel.setLastName(student.getLastName());
-                studentModel.setEmail(student.getEmail());
-                return studentModel;
-        }
+        studentModel.setForeName(student.getForeName());
+        studentModel.setLastName(student.getLastName());
+        studentModel.setEmail(student.getEmail());
+        return studentModel;
     }
 }
