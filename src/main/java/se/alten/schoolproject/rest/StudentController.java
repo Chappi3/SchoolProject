@@ -8,9 +8,13 @@ import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.StringReader;
 import java.util.List;
 
 @Stateless
@@ -89,7 +93,28 @@ public class StudentController {
         }
     }
 
-}
+    private String readJsonLastName(String jsonData) {
+        JsonReader reader = Json.createReader(new StringReader(jsonData));
+        JsonObject jsonObject = reader.readObject();
+        if (jsonObject.containsKey("lastName")) {
+            return jsonObject.getString("lastName");
+        }
+        else {
+            return "";
+        }
+    }
+
+    private String readJsonForeName(String jsonData) {
+        JsonReader reader = Json.createReader(new StringReader(jsonData));
+        JsonObject jsonObject = reader.readObject();
+        if (jsonObject.containsKey("foreName")) {
+            return jsonObject.getString("foreName");
+        }
+        else {
+            return "";
+        }
+    }
+
     private String readJsonEmail(String jsonData) throws BadRequestException {
         JsonReader reader = Json.createReader(new StringReader(jsonData));
         JsonObject jsonObject = reader.readObject();
