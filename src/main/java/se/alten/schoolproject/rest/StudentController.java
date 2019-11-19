@@ -90,3 +90,13 @@ public class StudentController {
     }
 
 }
+    private String readJsonEmail(String jsonData) throws BadRequestException {
+        JsonReader reader = Json.createReader(new StringReader(jsonData));
+        JsonObject jsonObject = reader.readObject();
+        if (jsonObject.containsKey("email")) {
+            return jsonObject.getString("email");
+        } else {
+            throw new BadRequestException("No email received");
+        }
+    }
+}
