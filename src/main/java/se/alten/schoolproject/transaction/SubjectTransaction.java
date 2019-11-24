@@ -1,15 +1,11 @@
 package se.alten.schoolproject.transaction;
 
-import org.hibernate.Session;
-import se.alten.schoolproject.entity.Student;
-import se.alten.schoolproject.entity.Subject;
+import se.alten.schoolproject.entity.SubjectEntity;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Stateless
 @Default
@@ -20,12 +16,12 @@ public class SubjectTransaction implements SubjectTransactionAccess{
 
     @Override
     public List listAllSubjects() {
-        Query query = entityManager.createQuery("SELECT s FROM Subject s");
+        Query query = entityManager.createQuery("SELECT s FROM SubjectEntity s");
         return query.getResultList();
     }
 
     @Override
-    public Subject addSubject(Subject subject) {
+    public SubjectEntity addSubject(SubjectEntity subject) {
         try {
             entityManager.persist(subject);
             entityManager.flush();
@@ -37,10 +33,10 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
-    public List<Subject> getSubjectByName(List<String> subject) {
+    public List<SubjectEntity> getSubjectByName(List<String> subject) {
 
-        String queryStr = "SELECT sub FROM Subject sub WHERE sub.title IN :subject";
-        TypedQuery<Subject> query = entityManager.createQuery(queryStr, Subject.class);
+        String queryStr = "SELECT sub FROM SubjectEntity sub WHERE sub.title IN :subject";
+        TypedQuery<SubjectEntity> query = entityManager.createQuery(queryStr, SubjectEntity.class);
         query.setParameter("subject", subject);
 
         return query.getResultList();

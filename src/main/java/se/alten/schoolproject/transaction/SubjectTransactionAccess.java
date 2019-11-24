@@ -1,6 +1,6 @@
 package se.alten.schoolproject.transaction;
 
-import se.alten.schoolproject.entity.Subject;
+import se.alten.schoolproject.entity.SubjectEntity;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -8,6 +8,6 @@ import java.util.List;
 @Local
 public interface SubjectTransactionAccess {
     List listAllSubjects();
-    Subject addSubject(Subject subject);
-    List<Subject> getSubjectByName(List<String> subject);
+    SubjectEntity addSubject(SubjectEntity subject);
+    List<SubjectEntity> getSubjectByName(List<String> subject);
 }

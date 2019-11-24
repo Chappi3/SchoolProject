@@ -2,7 +2,6 @@ package se.alten.schoolproject.model;
 
 import lombok.*;
 import se.alten.schoolproject.entity.StudentEntity;
-import se.alten.schoolproject.entity.Subject;
 
 import java.util.ArrayList;
 import java.util.HashSet;

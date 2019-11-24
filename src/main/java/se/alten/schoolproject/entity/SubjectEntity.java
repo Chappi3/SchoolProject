@@ -1,6 +1,5 @@
 package se.alten.schoolproject.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.json.Json;
@@ -18,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Subject implements Serializable {
+public class SubjectEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,14 +29,14 @@ public class Subject implements Serializable {
     private String title;
 
     @ManyToMany(mappedBy = "subject", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private Set<Student> students = new HashSet<>();
+    private Set<StudentEntity> students = new HashSet<>();
 
-    public Subject toEntity(String subjectModel) {
+    public SubjectEntity toEntity(String subjectModel) {
         JsonReader reader = Json.createReader(new StringReader(subjectModel));
 
         JsonObject jsonObject = reader.readObject();
 
-        Subject subject = new Subject();
+        SubjectEntity subject = new SubjectEntity();
 
         if ( jsonObject.containsKey("subject")) {
 

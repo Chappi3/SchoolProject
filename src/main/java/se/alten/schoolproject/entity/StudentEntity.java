@@ -2,10 +2,7 @@ package se.alten.schoolproject.entity;
 
 import lombok.*;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import javax.json.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -41,14 +38,14 @@ public class StudentEntity implements Serializable {
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "student_subject",
-            joinColumns=@JoinColumn(name="stud_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "subj_id", referencedColumnName = "id"))
-    private Set<Subject> subject = new HashSet<>();
+            joinColumns=@JoinColumn(name="student_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
+    private Set<SubjectEntity> subject = new HashSet<>();
 
     @Transient
     private List<String> subjects = new ArrayList<>();
 
-    public StudentEntity toEntity(String studentModel) {
+    public StudentEntity toEntity(String studentModel, List availableSubjects) {
         List<String> temp = new ArrayList<>();
         JsonReader reader = Json.createReader(new StringReader(studentModel));
         JsonObject jsonObject = reader.readObject();
@@ -73,15 +70,16 @@ public class StudentEntity implements Serializable {
         }
 
         if (jsonObject.containsKey("subject")) {
-            JsonArray jsonArray = jsonObject.getJsonArray("subject");
-            for ( int i = 0; i < jsonArray.size(); i++ ){
-                temp.add(jsonArray.get(i).toString().replace("\"", ""));
-                student.setSubjects(temp);
+            JsonArray subjectJsonArray = jsonObject.getJsonArray("subject");
+            for (JsonValue subjectJsonValue : subjectJsonArray) {
+                if (availableSubjects.contains(subjectJsonValue.toString().replace("\"", ""))) {
+                    temp.add(subjectJsonValue.toString().replace("\"", ""));
+                }
             }
+            student.setSubjects(temp);
         } else {
             student.setSubjects(null);
         }
-
         return student;
     }
 }

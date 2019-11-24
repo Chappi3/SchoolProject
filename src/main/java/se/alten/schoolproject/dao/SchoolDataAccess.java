@@ -3,7 +3,7 @@ package se.alten.schoolproject.dao;
 import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.exceptions.BadRequestException;
 import se.alten.schoolproject.exceptions.NotFoundException;
-import se.alten.schoolproject.entity.Subject;
+import se.alten.schoolproject.entity.SubjectEntity;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
@@ -11,9 +11,6 @@ import se.alten.schoolproject.transaction.SubjectTransactionAccess;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -22,7 +19,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     private StudentEntity studentEntity = new StudentEntity();
     private StudentModel studentModel = new StudentModel();
-    private Subject subject = new Subject();
+    private SubjectEntity subjectEntity = new SubjectEntity();
     private SubjectModel subjectModel = new SubjectModel();
 
     @Inject
@@ -33,24 +30,21 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public List listAllStudents(){
-        List<StudentModel> sm = studentModel.toModelList(studentTransactionAccess.listAllStudents());
+//        List<StudentModel> sm = studentModel.toModelList(studentTransactionAccess.listAllStudents());
+        List sm = studentTransactionAccess.listAllStudents();
         return sm;
     }
 
     @Override
     public StudentModel addStudent(String newStudent) throws BadRequestException {
-        StudentEntity studentToAdd = studentEntity.toEntity(newStudent);
+        StudentEntity studentToAdd = studentEntity.toEntity(newStudent, listAllSubjects());
         boolean checkForEmptyVariables = Stream.of(studentToAdd.getForeName(), studentToAdd.getLastName(), studentToAdd.getEmail()).anyMatch(String::isBlank);
-
         if (checkForEmptyVariables) {
             throw new BadRequestException("Empty parameters");
         } else {
            studentTransactionAccess.addStudent(studentToAdd);
-
-            List<Subject> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
-
+            List<SubjectEntity> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
             subjects.forEach(sub -> studentToAdd.getSubject().add(sub));
-
             return studentModel.toModel(studentToAdd);
         }
     }
@@ -77,7 +71,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public SubjectModel addSubject(String newSubject) {
-        Subject subjectToAdd = subject.toEntity(newSubject);
+        SubjectEntity subjectToAdd = subjectEntity.toEntity(newSubject);
         subjectTransactionAccess.addSubject(subjectToAdd);
         return subjectModel.toModel(subjectToAdd);
     }
