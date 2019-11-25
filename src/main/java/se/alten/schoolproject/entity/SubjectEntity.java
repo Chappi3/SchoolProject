@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "subject")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,23 +29,22 @@ public class SubjectEntity implements Serializable {
     @Column
     private String title;
 
-    @ManyToMany(mappedBy = "subject", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinTable(name = "student_subject",
+            joinColumns=@JoinColumn(name="student_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
     private Set<StudentEntity> students = new HashSet<>();
 
     public SubjectEntity toEntity(String subjectModel) {
         JsonReader reader = Json.createReader(new StringReader(subjectModel));
-
         JsonObject jsonObject = reader.readObject();
-
         SubjectEntity subject = new SubjectEntity();
 
         if ( jsonObject.containsKey("subject")) {
-
             subject.setTitle(jsonObject.getString("subject"));
         } else {
             subject.setTitle("");
         }
-
         return subject;
     }
 }

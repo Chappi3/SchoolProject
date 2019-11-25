@@ -36,10 +36,7 @@ public class StudentEntity implements Serializable {
     @Column(name = "email", unique = true)
     private String email;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(name = "student_subject",
-            joinColumns=@JoinColumn(name="student_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
+    @ManyToMany(mappedBy = "students", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<SubjectEntity> subject = new HashSet<>();
 
     @Transient
@@ -72,9 +69,9 @@ public class StudentEntity implements Serializable {
         if (jsonObject.containsKey("subject")) {
             JsonArray subjectJsonArray = jsonObject.getJsonArray("subject");
             for (JsonValue subjectJsonValue : subjectJsonArray) {
-                if (availableSubjects.contains(subjectJsonValue.toString().replace("\"", ""))) {
+//                if (availableSubjects.contains(subjectJsonValue.toString().replace("\"", ""))) {
                     temp.add(subjectJsonValue.toString().replace("\"", ""));
-                }
+//                }
             }
             student.setSubjects(temp);
         } else {
