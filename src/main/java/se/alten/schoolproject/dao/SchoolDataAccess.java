@@ -37,7 +37,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public StudentModel addStudent(String newStudent) throws BadRequestException {
-        StudentEntity studentToAdd = studentEntity.toEntity(newStudent, listAllSubjects());
+        StudentEntity studentToAdd = studentEntity.toEntity(newStudent);
         boolean checkForEmptyVariables = Stream.of(studentToAdd.getForeName(), studentToAdd.getLastName(), studentToAdd.getEmail()).anyMatch(String::isBlank);
         if (checkForEmptyVariables) {
             throw new BadRequestException("Empty parameters");

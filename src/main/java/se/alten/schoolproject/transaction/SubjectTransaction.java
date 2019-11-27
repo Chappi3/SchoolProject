@@ -1,6 +1,7 @@
 package se.alten.schoolproject.transaction;
 
 import se.alten.schoolproject.entity.SubjectEntity;
+import se.alten.schoolproject.exceptions.BadRequestException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -28,7 +29,6 @@ public class SubjectTransaction implements SubjectTransactionAccess{
             return subject;
         } catch ( PersistenceException pe ) {
             throw new BadRequestException("Subject already exists");
-            return subject;
         }
     }
 

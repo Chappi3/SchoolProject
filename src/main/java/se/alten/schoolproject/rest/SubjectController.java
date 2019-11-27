@@ -2,6 +2,7 @@ package se.alten.schoolproject.rest;
 
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
+import se.alten.schoolproject.exceptions.BadRequestException;
 import se.alten.schoolproject.model.SubjectModel;
 
 import javax.ejb.Stateless;
