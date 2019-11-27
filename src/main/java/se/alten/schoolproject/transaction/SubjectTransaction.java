@@ -21,13 +21,13 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
-    public SubjectEntity addSubject(SubjectEntity subject) {
+    public SubjectEntity addSubject(SubjectEntity subject) throws BadRequestException {
         try {
             entityManager.persist(subject);
             entityManager.flush();
             return subject;
         } catch ( PersistenceException pe ) {
-            subject.setTitle("duplicate");
+            throw new BadRequestException("Subject already exists");
             return subject;
         }
     }

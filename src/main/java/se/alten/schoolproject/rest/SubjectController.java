@@ -37,7 +37,11 @@ public class SubjectController {
         try {
             SubjectModel subjectModel = sal.addSubject(subject);
             return Response.ok(subjectModel).build();
-        } catch (Exception e ) {
+        }
+        catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+        catch (Exception e) {
             return Response.status(404).build();
         }
     }

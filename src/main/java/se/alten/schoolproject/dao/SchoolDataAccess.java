@@ -70,7 +70,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public SubjectModel addSubject(String newSubject) {
+    public SubjectModel addSubject(String newSubject) throws BadRequestException {
         SubjectEntity subjectToAdd = subjectEntity.toEntity(newSubject);
         subjectTransactionAccess.addSubject(subjectToAdd);
         return subjectModel.toModel(subjectToAdd);
