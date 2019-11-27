@@ -20,13 +20,13 @@ import java.util.Set;
 @ToString
 public class SubjectEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2066770006985636516L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String title;
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
