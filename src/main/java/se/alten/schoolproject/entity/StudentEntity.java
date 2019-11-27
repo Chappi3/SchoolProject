@@ -20,7 +20,7 @@ import java.util.Set;
 @ToString
 public class StudentEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7884822492814832552L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +42,7 @@ public class StudentEntity implements Serializable {
     @Transient
     private List<String> subjects = new ArrayList<>();
 
-    public StudentEntity toEntity(String studentModel, List availableSubjects) {
+    public StudentEntity toEntity(String studentModel) {
         List<String> temp = new ArrayList<>();
         JsonReader reader = Json.createReader(new StringReader(studentModel));
         JsonObject jsonObject = reader.readObject();
@@ -68,11 +68,15 @@ public class StudentEntity implements Serializable {
 
         if (jsonObject.containsKey("subject")) {
             JsonArray subjectJsonArray = jsonObject.getJsonArray("subject");
-            for (JsonValue subjectJsonValue : subjectJsonArray) {
-//                if (availableSubjects.contains(subjectJsonValue.toString().replace("\"", ""))) {
-                    temp.add(subjectJsonValue.toString().replace("\"", ""));
-//                }
+
+            for (int i = 0; i < subjectJsonArray.size(); i++) {
+                temp.add(subjectJsonArray.get(i).toString());
             }
+
+//            for (JsonValue subjectJsonValue : subjectJsonArray) {
+//                    temp.add(subjectJsonValue.toString().replace("\"", ""));
+//            }
+
             student.setSubjects(temp);
         } else {
             student.setSubjects(null);
