@@ -1,7 +1,7 @@
 package se.alten.schoolproject.transaction;
 
 import se.alten.schoolproject.entity.SubjectEntity;
-import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.DuplicateEntityException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -21,13 +21,13 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
-    public SubjectEntity addSubject(SubjectEntity subject) throws BadRequestException {
+    public SubjectEntity addSubject(SubjectEntity subject) throws DuplicateEntityException {
         try {
             entityManager.persist(subject);
             entityManager.flush();
             return subject;
-        } catch ( PersistenceException pe ) {
-            throw new BadRequestException("Subject already exists");
+        } catch ( PersistenceException e) {
+            throw new DuplicateEntityException("Subject already exists");
         }
     }
 

@@ -2,16 +2,19 @@ package se.alten.schoolproject.dao;
 
 import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.DuplicateEntityException;
 import se.alten.schoolproject.exceptions.NotFoundException;
 import se.alten.schoolproject.entity.SubjectEntity;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
 import se.alten.schoolproject.transaction.SubjectTransactionAccess;
+import se.alten.schoolproject.util.convertFromJson;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Stateless
@@ -19,14 +22,16 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     private StudentEntity studentEntity = new StudentEntity();
     private StudentModel studentModel = new StudentModel();
-    private SubjectEntity subjectEntity = new SubjectEntity();
-    private SubjectModel subjectModel = new SubjectModel();
 
     @Inject
     StudentTransactionAccess studentTransactionAccess;
 
     @Inject
     SubjectTransactionAccess subjectTransactionAccess;
+
+    /**
+     * Students
+     */
 
     @Override
     public List listAllStudents(){
@@ -64,15 +69,24 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
         return studentTransactionAccess.findStudent(foreName, lastName);
     }
 
+    /**
+     * Subjects
+     */
+
     @Override
-    public List<SubjectEntity> listAllSubjects() {
-        return subjectTransactionAccess.listAllSubjects();
+    public List<SubjectModel> listAllSubjects() {
+        List<SubjectEntity> subjectEntities = subjectTransactionAccess.listAllSubjects();
+        return subjectEntities.stream().map(SubjectEntity::subjectEntityToModel).collect(Collectors.toList());
     }
 
     @Override
-    public SubjectModel addSubject(String newSubject) throws BadRequestException {
-        SubjectEntity subjectToAdd = subjectEntity.toEntity(newSubject);
-        subjectTransactionAccess.addSubject(subjectToAdd);
-        return subjectModel.toModel(subjectToAdd);
+    public SubjectModel addSubject(String newSubject) throws DuplicateEntityException, BadRequestException {
+        if (newSubject.isBlank()) {
+            throw new BadRequestException("Empty title");
+        }
+        else {
+            SubjectEntity subjectToAdd = convertFromJson.subjectJsonToSubjectEntity(newSubject);
+            return subjectTransactionAccess.addSubject(subjectToAdd).subjectEntityToModel();
+        }
     }
 }

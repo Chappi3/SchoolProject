@@ -3,6 +3,7 @@ package se.alten.schoolproject.rest;
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.DuplicateEntityException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -29,13 +30,13 @@ public class SubjectController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addSubject(String subject) {
         try {
-            return Response.ok(schoolAccessLocal.addSubject(subject)).build();
+            return Response.status(Response.Status.CREATED).entity(schoolAccessLocal.addSubject(subject)).build();
+        }
+        catch (DuplicateEntityException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
         catch (BadRequestException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-        }
-        catch (Exception e) {
-            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
     }
 }

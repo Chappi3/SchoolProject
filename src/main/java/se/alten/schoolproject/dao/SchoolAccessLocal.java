@@ -1,6 +1,7 @@
 package se.alten.schoolproject.dao;
 
 import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.DuplicateEntityException;
 import se.alten.schoolproject.exceptions.NotFoundException;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
@@ -15,6 +16,7 @@ public interface SchoolAccessLocal {
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
     List findStudent(String foreName, String lastName);
-    List listAllSubjects();
-    SubjectModel addSubject(String subjectModel) throws BadRequestException;
+
+    List<SubjectModel> listAllSubjects();
+    SubjectModel addSubject(String subjectModel) throws DuplicateEntityException, BadRequestException;
 }

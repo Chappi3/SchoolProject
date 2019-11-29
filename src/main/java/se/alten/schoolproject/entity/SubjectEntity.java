@@ -1,13 +1,10 @@
 package se.alten.schoolproject.entity;
 
 import lombok.*;
+import se.alten.schoolproject.model.SubjectModel;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,16 +32,11 @@ public class SubjectEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
     private Set<StudentEntity> students = new HashSet<>();
 
-    public SubjectEntity toEntity(String subjectModel) {
-        JsonReader reader = Json.createReader(new StringReader(subjectModel));
-        JsonObject jsonObject = reader.readObject();
-        SubjectEntity subject = new SubjectEntity();
+    public SubjectModel subjectEntityToModel() {
+        SubjectModel subjectModel = new SubjectModel();
+        subjectModel.setId(id);
+        subjectModel.setTitle(title);
 
-        if ( jsonObject.containsKey("subject")) {
-            subject.setTitle(jsonObject.getString("subject"));
-        } else {
-            subject.setTitle("");
-        }
-        return subject;
+        return subjectModel;
     }
 }
