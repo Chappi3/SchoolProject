@@ -65,7 +65,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public List listAllSubjects() {
+    public List<SubjectEntity> listAllSubjects() {
         return subjectTransactionAccess.listAllSubjects();
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Local
 public interface SubjectTransactionAccess {
-    List listAllSubjects();
+    List<SubjectEntity> listAllSubjects();
     SubjectEntity addSubject(SubjectEntity subject) throws BadRequestException;
     List<SubjectEntity> getSubjectByName(List<String> subject);
 }

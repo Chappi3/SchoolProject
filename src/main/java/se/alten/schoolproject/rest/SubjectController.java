@@ -3,32 +3,25 @@ package se.alten.schoolproject.rest;
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.BadRequestException;
-import se.alten.schoolproject.model.SubjectModel;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Stateless
 @NoArgsConstructor
-@Path("/subject")
+@Path("/subjects")
 public class SubjectController {
 
     @Inject
-    private SchoolAccessLocal sal;
+    private SchoolAccessLocal schoolAccessLocal;
 
     @GET
     @Produces({"application/JSON"})
     public Response listSubjects() {
-        try {
-            List subject = sal.listAllSubjects();
-            return Response.ok(subject).build();
-        } catch ( Exception e ) {
-            return Response.status(Response.Status.CONFLICT).build();
-        }
+            return Response.ok(schoolAccessLocal.listAllSubjects()).build();
     }
 
     @POST
@@ -36,14 +29,13 @@ public class SubjectController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addSubject(String subject) {
         try {
-            SubjectModel subjectModel = sal.addSubject(subject);
-            return Response.ok(subjectModel).build();
+            return Response.ok(schoolAccessLocal.addSubject(subject)).build();
         }
         catch (BadRequestException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         catch (Exception e) {
-            return Response.status(404).build();
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
     }
 }
