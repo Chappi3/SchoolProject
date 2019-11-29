@@ -1,15 +1,13 @@
 package se.alten.schoolproject.entity;
 
 import lombok.*;
+import se.alten.schoolproject.model.StudentModel;
 
-import javax.json.*;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name="student")
@@ -37,50 +35,19 @@ public class StudentEntity implements Serializable {
     private String email;
 
     @ManyToMany(mappedBy = "students", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private Set<SubjectEntity> subject = new HashSet<>();
+    private Set<SubjectEntity> subjects = new HashSet<>();
 
-    @Transient
-    private List<String> subjects = new ArrayList<>();
+    /*@Transient
+    private List<String> subjects = new ArrayList<>();*/
 
-    public StudentEntity toEntity(String studentModel) {
-        List<String> temp = new ArrayList<>();
-        JsonReader reader = Json.createReader(new StringReader(studentModel));
-        JsonObject jsonObject = reader.readObject();
+    public StudentModel studentEntityToStudentModel() {
+        StudentModel studentModel = new StudentModel();
+        studentModel.setId(getId());
+        studentModel.setForeName(getForeName());
+        studentModel.setLastName(getLastName());
+        studentModel.setEmail(getEmail());
+        studentModel.setSubjects(getSubjects().stream().map(SubjectEntity::getTitle).collect(Collectors.toSet()));
 
-        StudentEntity student = new StudentEntity();
-        if ( jsonObject.containsKey("foreName")) {
-            student.setForeName(jsonObject.getString("foreName"));
-        } else {
-            student.setForeName("");
-        }
-
-        if ( jsonObject.containsKey("lastName")) {
-            student.setLastName(jsonObject.getString("lastName"));
-        } else {
-            student.setLastName("");
-        }
-
-        if ( jsonObject.containsKey("email")) {
-            student.setEmail(jsonObject.getString("email"));
-        } else {
-            student.setEmail("");
-        }
-
-        if (jsonObject.containsKey("subject")) {
-            JsonArray subjectJsonArray = jsonObject.getJsonArray("subject");
-
-            for (int i = 0; i < subjectJsonArray.size(); i++) {
-                temp.add(subjectJsonArray.get(i).toString());
-            }
-
-//            for (JsonValue subjectJsonValue : subjectJsonArray) {
-//                    temp.add(subjectJsonValue.toString().replace("\"", ""));
-//            }
-
-            student.setSubjects(temp);
-        } else {
-            student.setSubjects(null);
-        }
-        return student;
+        return studentModel;
     }
 }

@@ -3,6 +3,7 @@ package se.alten.schoolproject.rest;
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.BadRequestException;
+import se.alten.schoolproject.exceptions.DuplicateEntityException;
 import se.alten.schoolproject.exceptions.NotFoundException;
 import se.alten.schoolproject.model.StudentModel;
 
@@ -26,21 +27,16 @@ public class StudentController {
     private SchoolAccessLocal schoolAccessLocal;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({"application/JSON"})
     public Response showStudents() {
-        try {
             List students = schoolAccessLocal.listAllStudents();
             return Response.ok(students).build();
-        }
-        catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
     }
 
     @GET
     @Path("/find")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({"application/JSON"})
     public Response findStudent(String jsonData) {
         String foreName = readJsonForeName(jsonData);
         String lastName = readJsonLastName(jsonData);
@@ -51,18 +47,20 @@ public class StudentController {
                 return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
             }
         }
-        List result = schoolAccessLocal.findStudent(foreName, lastName);
-        return Response.ok(result).build();
+        return Response.ok(schoolAccessLocal.findStudent(foreName, lastName)).build();
     }
 
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({"application/JSON"})
     public Response addStudent(String studentModel) {
         try {
             StudentModel answer = schoolAccessLocal.addStudent(studentModel);
             return Response.status(Response.Status.CREATED).entity(answer).build();
+        }
+        catch (DuplicateEntityException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
         }
         catch (BadRequestException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();

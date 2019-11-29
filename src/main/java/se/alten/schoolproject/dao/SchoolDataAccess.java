@@ -20,9 +20,6 @@ import java.util.stream.Stream;
 @Stateless
 public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
-    private StudentEntity studentEntity = new StudentEntity();
-    private StudentModel studentModel = new StudentModel();
-
     @Inject
     StudentTransactionAccess studentTransactionAccess;
 
@@ -34,23 +31,27 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
      */
 
     @Override
-    public List listAllStudents(){
-//        List<StudentModel> sm = studentModel.toModelList(studentTransactionAccess.listAllStudents());
-        List sm = studentTransactionAccess.listAllStudents();
-        return sm;
+    public List<StudentModel> listAllStudents(){
+        return studentTransactionAccess.listAllStudents()
+                .stream()
+                .map(StudentEntity::studentEntityToStudentModel)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public StudentModel addStudent(String newStudent) throws BadRequestException {
-        StudentEntity studentToAdd = studentEntity.toEntity(newStudent);
-        boolean checkForEmptyVariables = Stream.of(studentToAdd.getForeName(), studentToAdd.getLastName(), studentToAdd.getEmail()).anyMatch(String::isBlank);
+    public StudentModel addStudent(String newStudent) throws BadRequestException, DuplicateEntityException {
+        StudentEntity studentToAdd = convertFromJson.studentJsonToStudentEntity(newStudent);
+        boolean checkForEmptyVariables = Stream.of(studentToAdd.getForeName(),
+                studentToAdd.getLastName(),
+                studentToAdd.getEmail())
+                .anyMatch(String::isBlank);
+
         if (checkForEmptyVariables) {
             throw new BadRequestException("Empty parameters");
         } else {
-           studentTransactionAccess.addStudent(studentToAdd);
-            List<SubjectEntity> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
-            subjects.forEach(sub -> studentToAdd.getSubject().add(sub));
-            return studentModel.toModel(studentToAdd);
+//            List<SubjectEntity> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
+//            subjects.forEach(sub -> studentToAdd.getSubjects().add(sub));
+            return studentTransactionAccess.addStudent(studentToAdd).studentEntityToStudentModel();
         }
     }
 
@@ -65,8 +66,11 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public List findStudent(String foreName, String lastName) {
-        return studentTransactionAccess.findStudent(foreName, lastName);
+    public List<StudentModel> findStudent(String foreName, String lastName) {
+        return studentTransactionAccess.findStudent(foreName, lastName)
+                .stream()
+                .map(StudentEntity::studentEntityToStudentModel)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -81,11 +85,11 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public SubjectModel addSubject(String newSubject) throws DuplicateEntityException, BadRequestException {
-        if (newSubject.isBlank()) {
+        SubjectEntity subjectToAdd = convertFromJson.subjectJsonToSubjectEntity(newSubject);
+        if (subjectToAdd.getTitle().isBlank()) {
             throw new BadRequestException("Empty title");
         }
         else {
-            SubjectEntity subjectToAdd = convertFromJson.subjectJsonToSubjectEntity(newSubject);
             return subjectTransactionAccess.addSubject(subjectToAdd).subjectEntityToModel();
         }
     }

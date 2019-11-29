@@ -1,19 +1,23 @@
 package se.alten.schoolproject.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import se.alten.schoolproject.entity.StudentEntity;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class StudentModel {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StudentModel implements Serializable {
+
+    private static final long serialVersionUID = -3593725019308065508L;
 
     private Long id;
     private String foreName;
@@ -21,28 +25,16 @@ public class StudentModel {
     private String email;
     private Set<String> subjects = new HashSet<>();
 
-    public StudentModel toModel(StudentEntity student) {
-        StudentModel studentModel = new StudentModel();
-        studentModel.setForeName(student.getForeName());
-        studentModel.setLastName(student.getLastName());
-        studentModel.setEmail(student.getEmail());
-        student.getSubject().forEach(subject -> studentModel.subjects.add(subject.getTitle()));
-        return studentModel;
-    }
+    public StudentEntity studentModelToStudentEntity() {
+        StudentEntity studentEntity = new StudentEntity();
 
-    public List<StudentModel> toModelList(List<StudentEntity> students) {
+        studentEntity.setId(getId());
+        studentEntity.setForeName(getForeName());
+        studentEntity.setLastName(getLastName());
+        studentEntity.setEmail(getEmail());
+//        TODO: FIX
+//        studentEntity.setSubjects(getSubjects().stream().map().collect(Collectors.toList()));
 
-        List<StudentModel> studentModels = new ArrayList<>();
-
-        students.forEach(student -> {
-            StudentModel studentModel = new StudentModel();
-            studentModel.foreName = student.getForeName();
-            studentModel.lastName = student.getLastName();
-            studentModel.email = student.getEmail();
-            student.getSubject().forEach(subject -> studentModel.subjects.add(subject.getTitle()));
-
-            studentModels.add(studentModel);
-        });
-        return studentModels;
+        return studentEntity;
     }
 }

@@ -11,11 +11,11 @@ import java.util.List;
 
 @Local
 public interface SchoolAccessLocal {
-    List listAllStudents() throws Exception;
-    StudentModel addStudent(String studentModel) throws BadRequestException;
+    List<StudentModel> listAllStudents();
+    StudentModel addStudent(String studentModel) throws BadRequestException, DuplicateEntityException;
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
-    List findStudent(String foreName, String lastName);
+    List<StudentModel> findStudent(String foreName, String lastName);
 
     List<SubjectModel> listAllSubjects();
     SubjectModel addSubject(String subjectModel) throws DuplicateEntityException, BadRequestException;

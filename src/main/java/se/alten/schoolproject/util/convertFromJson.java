@@ -1,5 +1,6 @@
 package se.alten.schoolproject.util;
 
+import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.entity.SubjectEntity;
 
 import javax.json.Json;
@@ -20,5 +21,31 @@ public class convertFromJson {
             subjectEntity.setTitle("");
         }
         return subjectEntity;
+    }
+
+    public static StudentEntity studentJsonToStudentEntity(String jsonData) {
+        JsonReader reader = Json.createReader(new StringReader(jsonData));
+        JsonObject jsonObject = reader.readObject();
+        StudentEntity student = new StudentEntity();
+
+        if ( jsonObject.containsKey("foreName")) {
+            student.setForeName(jsonObject.getString("foreName"));
+        } else {
+            student.setForeName("");
+        }
+
+        if ( jsonObject.containsKey("lastName")) {
+            student.setLastName(jsonObject.getString("lastName"));
+        } else {
+            student.setLastName("");
+        }
+
+        if ( jsonObject.containsKey("email")) {
+            student.setEmail(jsonObject.getString("email"));
+        } else {
+            student.setEmail("");
+        }
+
+        return student;
     }
 }
