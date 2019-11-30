@@ -5,18 +5,12 @@ import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.BadRequestException;
 import se.alten.schoolproject.exceptions.DuplicateEntityException;
 import se.alten.schoolproject.exceptions.NotFoundException;
-import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.StringReader;
-import java.util.List;
 
 @Stateless
 @NoArgsConstructor
@@ -29,8 +23,7 @@ public class StudentController {
     @GET
     @Produces({"application/JSON"})
     public Response showStudents() {
-            List students = schoolAccessLocal.listAllStudents();
-            return Response.ok(students).build();
+            return Response.ok(schoolAccessLocal.listAllStudents()).build();
     }
 
     @GET
@@ -38,26 +31,20 @@ public class StudentController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"application/JSON"})
     public Response findStudent(String jsonData) {
-        String foreName = readJsonForeName(jsonData);
-        String lastName = readJsonLastName(jsonData);
-        if (foreName.isBlank() && lastName.isBlank()) {
-            try {
-                throw new BadRequestException("No data");
-            } catch (BadRequestException e) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-            }
+        try {
+            return Response.ok(schoolAccessLocal.findStudent(jsonData)).build();
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
-        return Response.ok(schoolAccessLocal.findStudent(foreName, lastName)).build();
     }
 
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({"application/JSON"})
-    public Response addStudent(String studentModel) {
+    public Response addStudent(String studentJson) {
         try {
-            StudentModel answer = schoolAccessLocal.addStudent(studentModel);
-            return Response.status(Response.Status.CREATED).entity(answer).build();
+            return Response.status(Response.Status.CREATED).entity(schoolAccessLocal.addStudent(studentJson)).build();
         }
         catch (DuplicateEntityException e) {
             return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
@@ -72,8 +59,7 @@ public class StudentController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response removeStudent(String jsonEmail) {
         try {
-            String email = readJsonEmail(jsonEmail);
-            schoolAccessLocal.removeStudent(email);
+            schoolAccessLocal.removeStudent(jsonEmail);
             return Response.status(Response.Status.NO_CONTENT).build();
         }
         catch (NotFoundException e) {
@@ -89,55 +75,14 @@ public class StudentController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateStudent(String jsonData) {
         try {
-            String email = readJsonEmail(jsonData);
-            String foreName = readJsonForeName(jsonData);
-            String lastName = readJsonLastName(jsonData);
-            if (foreName.isBlank() && lastName.isBlank()) {
-                throw new BadRequestException("No data");
-            }
-            else {
-                schoolAccessLocal.updateStudent(foreName, lastName, email);
+                schoolAccessLocal.updateStudent(jsonData);
                 return Response.status(Response.Status.NO_CONTENT).build();
-            }
-
         }
         catch (BadRequestException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
         catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-        }
-    }
-
-    private String readJsonLastName(String jsonData) {
-        JsonReader reader = Json.createReader(new StringReader(jsonData));
-        JsonObject jsonObject = reader.readObject();
-        if (jsonObject.containsKey("lastName")) {
-            return jsonObject.getString("lastName");
-        }
-        else {
-            return "";
-        }
-    }
-
-    private String readJsonForeName(String jsonData) {
-        JsonReader reader = Json.createReader(new StringReader(jsonData));
-        JsonObject jsonObject = reader.readObject();
-        if (jsonObject.containsKey("foreName")) {
-            return jsonObject.getString("foreName");
-        }
-        else {
-            return "";
-        }
-    }
-
-    private String readJsonEmail(String jsonData) throws BadRequestException {
-        JsonReader reader = Json.createReader(new StringReader(jsonData));
-        JsonObject jsonObject = reader.readObject();
-        if (jsonObject.containsKey("email")) {
-            return jsonObject.getString("email");
-        } else {
-            throw new BadRequestException("No email received");
         }
     }
 }

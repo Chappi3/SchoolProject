@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "subject")
@@ -34,8 +35,12 @@ public class SubjectEntity implements Serializable {
 
     public SubjectModel subjectEntityToModel() {
         SubjectModel subjectModel = new SubjectModel();
-        subjectModel.setId(id);
-        subjectModel.setTitle(title);
+        subjectModel.setId(getId());
+        subjectModel.setTitle(getTitle());
+        subjectModel.setStudents(getStudents()
+                .stream()
+                .map(StudentEntity::studentEntityToStudentModel)
+                .collect(Collectors.toSet()));
 
         return subjectModel;
     }

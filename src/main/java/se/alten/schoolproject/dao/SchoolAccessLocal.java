@@ -12,11 +12,11 @@ import java.util.List;
 @Local
 public interface SchoolAccessLocal {
     List<StudentModel> listAllStudents();
-    StudentModel addStudent(String studentModel) throws BadRequestException, DuplicateEntityException;
-    void removeStudent(String student) throws NotFoundException;
-    void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
-    List<StudentModel> findStudent(String foreName, String lastName);
+    StudentModel addStudent(String studentModelJson) throws BadRequestException, DuplicateEntityException;
+    void removeStudent(String studentEmailJson) throws NotFoundException, BadRequestException;
+    void updateStudent(String studentUpdateJson) throws NotFoundException, BadRequestException;
+    List<StudentModel> findStudent(String findStudentJson) throws BadRequestException;
 
     List<SubjectModel> listAllSubjects();
-    SubjectModel addSubject(String subjectModel) throws DuplicateEntityException, BadRequestException;
+    SubjectModel addSubject(String subjectModelJson) throws DuplicateEntityException, BadRequestException;
 }

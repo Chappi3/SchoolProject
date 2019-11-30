@@ -56,18 +56,35 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public void removeStudent(String studentEmail) throws NotFoundException {
-        studentTransactionAccess.removeStudent(studentEmail);
+    public void removeStudent(String studentEmailJson) throws NotFoundException, BadRequestException {
+        StudentEntity studentEntityEmail = convertFromJson.studentJsonToStudentEntity(studentEmailJson);
+        if (studentEntityEmail.getEmail().isBlank()) {
+            throw new BadRequestException("No email received");
+        }
+        studentTransactionAccess.removeStudent(studentEntityEmail.getEmail());
     }
 
     @Override
-    public void updateStudent(String foreName, String lastName, String email) throws NotFoundException {
-        studentTransactionAccess.updateStudent(foreName, lastName, email);
+    public void updateStudent(String studentUpdateJson) throws NotFoundException, BadRequestException {
+        StudentEntity updatedStudentEntity = convertFromJson.studentJsonToStudentEntity(studentUpdateJson);
+        if (updatedStudentEntity.getEmail().isBlank()) {
+            throw new BadRequestException("No email received");
+        }
+        else if (updatedStudentEntity.getForeName().isBlank() && updatedStudentEntity.getLastName().isBlank()) {
+            throw new BadRequestException("No data");
+        }
+        studentTransactionAccess.updateStudent(updatedStudentEntity.getForeName(),
+                updatedStudentEntity.getLastName(),
+                updatedStudentEntity.getEmail());
     }
 
     @Override
-    public List<StudentModel> findStudent(String foreName, String lastName) {
-        return studentTransactionAccess.findStudent(foreName, lastName)
+    public List<StudentModel> findStudent(String findStudentJson) throws BadRequestException {
+        StudentEntity findStudentEntity = convertFromJson.studentJsonToStudentEntity(findStudentJson);
+        if (findStudentEntity.getForeName().isBlank() && findStudentEntity.getLastName().isBlank()) {
+            throw new BadRequestException("No data");
+        }
+        return studentTransactionAccess.findStudent(findStudentEntity.getForeName(), findStudentEntity.getLastName())
                 .stream()
                 .map(StudentEntity::studentEntityToStudentModel)
                 .collect(Collectors.toList());
@@ -84,13 +101,13 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public SubjectModel addSubject(String newSubject) throws DuplicateEntityException, BadRequestException {
-        SubjectEntity subjectToAdd = convertFromJson.subjectJsonToSubjectEntity(newSubject);
-        if (subjectToAdd.getTitle().isBlank()) {
+    public SubjectModel addSubject(String subjectModelJson) throws DuplicateEntityException, BadRequestException {
+        SubjectEntity newSubject = convertFromJson.subjectJsonToSubjectEntity(subjectModelJson);
+        if (newSubject.getTitle().isBlank()) {
             throw new BadRequestException("Empty title");
         }
         else {
-            return subjectTransactionAccess.addSubject(subjectToAdd).subjectEntityToModel();
+            return subjectTransactionAccess.addSubject(newSubject).subjectEntityToModel();
         }
     }
 }
