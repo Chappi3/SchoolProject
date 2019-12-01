@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 public class StudentEntity implements Serializable {
 
     private static final long serialVersionUID = 7884822492814832552L;
@@ -37,9 +36,6 @@ public class StudentEntity implements Serializable {
     @ManyToMany(mappedBy = "students", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<SubjectEntity> subjects = new HashSet<>();
 
-    /*@Transient
-    private List<String> subjects = new ArrayList<>();*/
-
     public StudentModel studentEntityToStudentModel() {
         StudentModel studentModel = new StudentModel();
         studentModel.setId(getId());
@@ -49,5 +45,10 @@ public class StudentEntity implements Serializable {
         studentModel.setSubjects(getSubjects().stream().map(SubjectEntity::getTitle).collect(Collectors.toSet()));
 
         return studentModel;
+    }
+
+    @Override
+    public String toString() {
+        return getForeName() + ", " + getLastName();
     }
 }
