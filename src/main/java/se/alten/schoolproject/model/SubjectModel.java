@@ -16,6 +16,6 @@ public class SubjectModel {
 
     private Long id;
     private String title;
-    private Set<StudentModel> students = new HashSet<>();
+    private Set<String> students = new HashSet<>();
 
 }
