@@ -28,19 +28,23 @@ public class SubjectEntity implements Serializable {
     private String title;
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(name = "student_subject",
-            joinColumns=@JoinColumn(name="student_id", referencedColumnName = "id"),
+    @JoinTable(name = "subject_student",
+            joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
     private Set<StudentEntity> students = new HashSet<>();
+
+    /*@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "subject_teacher",
+    joinColumns = @JoinColumn(name = "teacher_id", referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
+    private Set<TeacherEntity> teachers = new HashSet<>();*/
 
     public SubjectModel subjectEntityToModel() {
         SubjectModel subjectModel = new SubjectModel();
         subjectModel.setId(getId());
         subjectModel.setTitle(getTitle());
-        subjectModel.setStudents(getStudents()
-                .stream()
-                .map(StudentEntity::studentEntityToStudentModel)
-                .collect(Collectors.toSet()));
+        subjectModel.setStudents(getStudents().stream().map(StudentEntity::toString).collect(Collectors.toSet()));
+//        subjectModel.setTeachers(getTeachers().stream().map(TeacherEntity::toString).collect(Collectors.toSet()));
 
         return subjectModel;
     }
