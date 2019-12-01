@@ -6,10 +6,7 @@ import se.alten.schoolproject.exceptions.NotFoundException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.List;
 
 @Stateless
@@ -22,6 +19,15 @@ public class StudentTransaction implements StudentTransactionAccess{
     @Override
     public List<StudentEntity> listAllStudents() {
         return entityManager.createQuery("SELECT s FROM StudentEntity s", StudentEntity.class).getResultList();
+    }
+
+    @Override
+    public StudentEntity findStudentByEmail(String studentEmail) {
+        String queryStr = "SELECT s FROM StudentEntity s WHERE s.email = :studentEmail";
+        TypedQuery<StudentEntity> query = entityManager.createQuery(queryStr, StudentEntity.class)
+                .setParameter("studentEmail", studentEmail);
+
+        return query.getSingleResult();
     }
 
     @Override
