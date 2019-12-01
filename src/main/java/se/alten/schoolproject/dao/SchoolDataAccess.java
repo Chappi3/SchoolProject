@@ -13,7 +13,7 @@ import se.alten.schoolproject.util.convertFromJson;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,8 +49,6 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
         if (checkForEmptyVariables) {
             throw new BadRequestException("Empty parameters");
         } else {
-//            List<SubjectEntity> subjects = subjectTransactionAccess.getSubjectByName(studentToAdd.getSubjects());
-//            subjects.forEach(sub -> studentToAdd.getSubjects().add(sub));
             return studentTransactionAccess.addStudent(studentToAdd).studentEntityToStudentModel();
         }
     }
@@ -109,5 +107,80 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
         else {
             return subjectTransactionAccess.addSubject(newSubject).subjectEntityToModel();
         }
+    }
+
+    @Override
+    public SubjectModel addStudentToSubject(String jsonData) throws BadRequestException, DuplicateEntityException, NotFoundException {
+        String subjectTitle = convertFromJson.subjectJsonToSubjectEntity(jsonData).getTitle();
+        String studentEmail = convertFromJson.studentJsonToStudentEntity(jsonData).getEmail();
+
+        validateStudentToSubjectData(studentEmail, subjectTitle);
+
+        SubjectEntity subjectEntity = subjectTransactionAccess.getSubjectByName(subjectTitle);
+        StudentEntity studentEntity = studentTransactionAccess.findStudentByEmail(studentEmail);
+
+        if (isStudentInSubject(subjectEntity, studentEntity)) {
+            throw new DuplicateEntityException("Student already in subject");
+        }
+
+        studentEntity.getSubjects().add(subjectEntity);
+        subjectEntity.getStudents().add(studentEntity);
+
+        return subjectTransactionAccess.updateSubject(subjectEntity).subjectEntityToModel();
+    }
+
+    @Override
+    public void removeStudentFromSubject(String jsonData) throws BadRequestException, NotFoundException {
+        String subjectTitle = convertFromJson.subjectJsonToSubjectEntity(jsonData).getTitle();
+        String studentEmail = convertFromJson.studentJsonToStudentEntity(jsonData).getEmail();
+
+        validateStudentToSubjectData(studentEmail, subjectTitle);
+
+        SubjectEntity subjectEntity = subjectTransactionAccess.getSubjectByName(subjectTitle);
+        StudentEntity studentEntity = studentTransactionAccess.findStudentByEmail(studentEmail);
+
+        if (!isStudentInSubject(subjectEntity, studentEntity)) {
+            throw new NotFoundException("Student not found in subject");
+        }
+
+        int i = subjectTransactionAccess.removeStudentFromSubject(subjectEntity.getId(), studentEntity.getId());
+        if (i == 0) {
+            throw new NotFoundException("Could not remove student from subject");
+        }
+    }
+
+    @Override
+    public void removeSubject(String jsonData) throws BadRequestException, NotFoundException {
+        String subjectTitle = convertFromJson.subjectJsonToSubjectEntity(jsonData).getTitle();
+        if (subjectTitle.isBlank()) {
+            throw new BadRequestException("No subject received");
+        }
+        int i = subjectTransactionAccess.removeSubject(subjectTitle);
+        if (i == 0) {
+            throw new NotFoundException("Subject not found");
+        }
+    }
+
+    /**
+     * Helper Methods
+     */
+
+    private void validateStudentToSubjectData(String studentEmail, String subjectTitle) throws BadRequestException {
+
+        if (studentEmail.isBlank() && subjectTitle.isBlank()) {
+            throw new BadRequestException("No Data");
+        }
+        else if (studentEmail.isBlank()) {
+            throw new BadRequestException("No email received");
+        }
+        else if (subjectTitle.isBlank()) {
+            throw new BadRequestException("No subject received");
+        }
+    }
+
+    private boolean isStudentInSubject(SubjectEntity subjectEntity, StudentEntity studentEntity) {
+        return subjectEntity.getStudents()
+                .stream()
+                .anyMatch(studentInSubject -> studentInSubject.getEmail().equals(studentEntity.getEmail()));
     }
 }
