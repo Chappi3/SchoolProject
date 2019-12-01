@@ -19,4 +19,7 @@ public interface SchoolAccessLocal {
 
     List<SubjectModel> listAllSubjects();
     SubjectModel addSubject(String subjectModelJson) throws DuplicateEntityException, BadRequestException;
+    SubjectModel addStudentToSubject(String jsonData) throws DuplicateEntityException, NotFoundException, BadRequestException;
+    void removeStudentFromSubject(String jsonData) throws NotFoundException, BadRequestException;
+    void removeSubject(String jsonData) throws NotFoundException, BadRequestException;
 }
