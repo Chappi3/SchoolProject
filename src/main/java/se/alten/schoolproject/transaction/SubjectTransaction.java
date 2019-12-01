@@ -2,6 +2,7 @@ package se.alten.schoolproject.transaction;
 
 import se.alten.schoolproject.entity.SubjectEntity;
 import se.alten.schoolproject.exceptions.DuplicateEntityException;
+import se.alten.schoolproject.exceptions.NotFoundException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -32,11 +33,40 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
-    public List<SubjectEntity> getSubjectByName(List<String> subject) {
+    public SubjectEntity updateSubject(SubjectEntity subject) {
+        entityManager.merge(subject);
+        entityManager.flush();
+        return subject;
+    }
 
-        String queryStr = "SELECT sub FROM SubjectEntity sub WHERE sub.title = :subject";
-        TypedQuery<SubjectEntity> query = entityManager.createQuery(queryStr, SubjectEntity.class).setParameter("subject", subject);
+    @Override
+    public int removeStudentFromSubject(Long subjectId, Long studentId) {
+        Query query = entityManager.createNativeQuery("DELETE FROM subject_student s" +
+                " WHERE s.student_id = :studentId" +
+                " AND s.subject_id = :subjectId").setParameter("studentId", studentId).setParameter("subjectId", subjectId);
+        return query.executeUpdate();
+    }
 
-        return query.getResultList();
-     }
+    @Override
+    public int removeSubject(String subjectTitle) {
+        Query query = entityManager.createQuery("DELETE FROM SubjectEntity s" +
+                " WHERE s.title = :subjectTitle");
+
+        return query.setParameter("subjectTitle", subjectTitle)
+                .executeUpdate();
+    }
+
+    @Override
+    public SubjectEntity getSubjectByName(String subjectTitle) throws NotFoundException {
+
+        String queryStr = "SELECT sub FROM SubjectEntity sub WHERE sub.title = :subjectTitle";
+        TypedQuery<SubjectEntity> query = entityManager.createQuery(queryStr, SubjectEntity.class)
+                .setParameter("subjectTitle", subjectTitle);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException("Subject not found");
+        }
+    }
 }

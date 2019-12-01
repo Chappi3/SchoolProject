@@ -2,6 +2,7 @@ package se.alten.schoolproject.transaction;
 
 import se.alten.schoolproject.entity.SubjectEntity;
 import se.alten.schoolproject.exceptions.DuplicateEntityException;
+import se.alten.schoolproject.exceptions.NotFoundException;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -10,5 +11,8 @@ import java.util.List;
 public interface SubjectTransactionAccess {
     List<SubjectEntity> listAllSubjects();
     SubjectEntity addSubject(SubjectEntity subject) throws DuplicateEntityException;
-    List<SubjectEntity> getSubjectByName(List<String> subject);
+    SubjectEntity updateSubject(SubjectEntity subject);
+    int removeStudentFromSubject(Long subjectId, Long studentId);
+    SubjectEntity getSubjectByName(String subjectTitle) throws NotFoundException;
+    int removeSubject(String subjectTitle);
 }
