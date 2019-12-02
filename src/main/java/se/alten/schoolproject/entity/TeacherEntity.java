@@ -1,6 +1,6 @@
 package se.alten.schoolproject.entity;
 
-import lombok.*;
+import lombok.Data;
 import se.alten.schoolproject.model.TeacherModel;
 
 import javax.persistence.*;

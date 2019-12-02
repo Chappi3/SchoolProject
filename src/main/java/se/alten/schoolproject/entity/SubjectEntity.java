@@ -1,6 +1,8 @@
 package se.alten.schoolproject.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import se.alten.schoolproject.model.SubjectModel;
 
 import javax.persistence.*;
@@ -13,9 +15,7 @@ import java.util.stream.Collectors;
 @Table(name = "subject")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@RequiredArgsConstructor
 public class SubjectEntity implements Serializable {
 
     private static final long serialVersionUID = 2066770006985636516L;
@@ -23,29 +23,23 @@ public class SubjectEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String title;
-
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "subject_student",
             joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
     private Set<StudentEntity> students = new HashSet<>();
-
-    /*@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "subject_teacher",
     joinColumns = @JoinColumn(name = "teacher_id", referencedColumnName = "id"),
     inverseJoinColumns = @JoinColumn(name = "subject_id", referencedColumnName = "id"))
-    private Set<TeacherEntity> teachers = new HashSet<>();*/
+    private Set<TeacherEntity> teachers = new HashSet<>();
 
     public SubjectModel subjectEntityToModel() {
-        SubjectModel subjectModel = new SubjectModel();
-        subjectModel.setId(getId());
-        subjectModel.setTitle(getTitle());
-        subjectModel.setStudents(getStudents().stream().map(StudentEntity::toString).collect(Collectors.toSet()));
-//        subjectModel.setTeachers(getTeachers().stream().map(TeacherEntity::toString).collect(Collectors.toSet()));
-
-        return subjectModel;
+        return new SubjectModel(getId(),
+                getTitle(),
+                getStudents().stream().map(StudentEntity::toString).collect(Collectors.toSet()),
+                getTeachers().stream().map(TeacherEntity::toString).collect(Collectors.toSet()));
     }
 }

@@ -1,6 +1,6 @@
 package se.alten.schoolproject.entity;
 
-import lombok.*;
+import lombok.Data;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.persistence.*;
@@ -11,10 +11,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name="student")
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class StudentEntity implements Serializable {
 
     private static final long serialVersionUID = 7884822492814832552L;
@@ -23,28 +20,21 @@ public class StudentEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     private Long id;
-
-    @Column(name = "foreName")
+    @Column(name = "fore_name")
     private String foreName;
-
-    @Column(name = "lastName")
+    @Column(name = "last_name")
     private String lastName;
-
     @Column(name = "email", unique = true)
     private String email;
-
     @ManyToMany(mappedBy = "students", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<SubjectEntity> subjects = new HashSet<>();
 
     public StudentModel studentEntityToStudentModel() {
-        StudentModel studentModel = new StudentModel();
-        studentModel.setId(getId());
-        studentModel.setForeName(getForeName());
-        studentModel.setLastName(getLastName());
-        studentModel.setEmail(getEmail());
-        studentModel.setSubjects(getSubjects().stream().map(SubjectEntity::getTitle).collect(Collectors.toSet()));
-
-        return studentModel;
+        return new StudentModel(getId(),
+                getForeName(),
+                getLastName(),
+                getEmail(),
+                getSubjects().stream().map(SubjectEntity::getTitle).collect(Collectors.toSet()));
     }
 
     @Override
