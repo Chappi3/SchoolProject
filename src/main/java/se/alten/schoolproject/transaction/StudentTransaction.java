@@ -22,12 +22,16 @@ public class StudentTransaction implements StudentTransactionAccess{
     }
 
     @Override
-    public StudentEntity findStudentByEmail(String studentEmail) {
-        String queryStr = "SELECT s FROM StudentEntity s WHERE s.email = :studentEmail";
-        TypedQuery<StudentEntity> query = entityManager.createQuery(queryStr, StudentEntity.class)
-                .setParameter("studentEmail", studentEmail);
+    public StudentEntity findStudentByEmail(String studentEmail) throws NotFoundException {
+        if (isEmailExist(studentEmail)) {
+            String queryStr = "SELECT s FROM StudentEntity s WHERE s.email = :studentEmail";
+            TypedQuery<StudentEntity> query = entityManager.createQuery(queryStr, StudentEntity.class)
+                    .setParameter("studentEmail", studentEmail);
 
-        return query.getSingleResult();
+            return query.getSingleResult();
+        } else {
+            throw new NotFoundException("Email not found");
+        }
     }
 
     @Override

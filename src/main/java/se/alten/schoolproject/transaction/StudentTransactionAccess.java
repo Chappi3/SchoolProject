@@ -10,7 +10,7 @@ import java.util.List;
 @Local
 public interface StudentTransactionAccess {
     List<StudentEntity> listAllStudents();
-    StudentEntity findStudentByEmail(String studentEmail);
+    StudentEntity findStudentByEmail(String studentEmail) throws NotFoundException;
     StudentEntity addStudent(StudentEntity studentToAdd) throws DuplicateEntityException;
     void removeStudent(String student) throws NotFoundException;
     void updateStudent(String foreName, String lastName, String email) throws NotFoundException;
