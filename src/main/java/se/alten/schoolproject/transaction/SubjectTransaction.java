@@ -48,6 +48,14 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
+    public int removeTeacherFromSubject(Long subjectId, Long teacherId) {
+        Query query = entityManager.createNativeQuery("DELETE FROM subject_teacher s" +
+                " WHERE s.teacher_id = :teacherId" +
+                " AND s.subject_id = :subjectId").setParameter("teacherId", teacherId).setParameter("subjectId", subjectId);
+        return query.executeUpdate();
+    }
+
+    @Override
     public int removeSubject(String subjectTitle) {
         Query query = entityManager.createQuery("DELETE FROM SubjectEntity s" +
                 " WHERE s.title = :subjectTitle");

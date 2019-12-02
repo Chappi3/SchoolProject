@@ -5,6 +5,7 @@ import se.alten.schoolproject.exceptions.DuplicateEntityException;
 import se.alten.schoolproject.exceptions.NotFoundException;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
+import se.alten.schoolproject.model.TeacherModel;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -17,9 +18,17 @@ public interface SchoolAccessLocal {
     void updateStudent(String studentUpdateJson) throws NotFoundException, BadRequestException;
     List<StudentModel> findStudent(String findStudentJson) throws BadRequestException;
 
+    List<TeacherModel> listAllTeachers();
+    TeacherModel addTeacher(String teacherModelJson) throws BadRequestException, DuplicateEntityException;
+    void removeTeacher(String teacherEmailJson) throws NotFoundException, BadRequestException;
+    void updateTeacher(String teacherUpdateJson) throws NotFoundException, BadRequestException;
+    List<TeacherModel> findTeacher(String findTeacherJson) throws BadRequestException;
+
     List<SubjectModel> listAllSubjects();
     SubjectModel addSubject(String subjectModelJson) throws DuplicateEntityException, BadRequestException;
     SubjectModel addStudentToSubject(String jsonData) throws DuplicateEntityException, NotFoundException, BadRequestException;
+    SubjectModel addTeacherToSubject(String jsonData) throws DuplicateEntityException, NotFoundException, BadRequestException;
     void removeStudentFromSubject(String jsonData) throws NotFoundException, BadRequestException;
+    void removeTeacherFromSubject(String jsonData) throws NotFoundException, BadRequestException;
     void removeSubject(String jsonData) throws NotFoundException, BadRequestException;
 }

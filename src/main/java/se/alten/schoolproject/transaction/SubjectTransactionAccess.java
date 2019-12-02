@@ -13,6 +13,7 @@ public interface SubjectTransactionAccess {
     SubjectEntity addSubject(SubjectEntity subject) throws DuplicateEntityException;
     SubjectEntity updateSubject(SubjectEntity subject);
     int removeStudentFromSubject(Long subjectId, Long studentId);
+    int removeTeacherFromSubject(Long subjectId, Long teacherId);
     SubjectEntity getSubjectByName(String subjectTitle) throws NotFoundException;
     int removeSubject(String subjectTitle);
 }

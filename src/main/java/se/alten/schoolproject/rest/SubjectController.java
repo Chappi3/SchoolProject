@@ -57,12 +57,42 @@ public class SubjectController {
         }
     }
 
+    @PATCH
+    @Produces({"application/JSON"})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/add/teacher")
+    public Response addTeacher(String jsonData) {
+        try {
+            return Response.ok(schoolAccessLocal.addTeacherToSubject(jsonData)).build();
+        } catch (DuplicateEntityException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
     @DELETE
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/remove/student")
     public Response removeStudent(String jsonData) {
         try {
             schoolAccessLocal.removeStudentFromSubject(jsonData);
+            return Response.ok().build();
+        } catch (NotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (BadRequestException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        }
+    }
+
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/remove/teacher")
+    public Response removeTeacher(String jsonData) {
+        try {
+            schoolAccessLocal.removeTeacherFromSubject(jsonData);
             return Response.ok().build();
         } catch (NotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();

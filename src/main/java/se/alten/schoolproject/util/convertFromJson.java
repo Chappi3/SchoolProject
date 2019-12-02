@@ -2,6 +2,7 @@ package se.alten.schoolproject.util;
 
 import se.alten.schoolproject.entity.StudentEntity;
 import se.alten.schoolproject.entity.SubjectEntity;
+import se.alten.schoolproject.entity.TeacherEntity;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -47,5 +48,31 @@ public class convertFromJson {
         }
 
         return student;
+    }
+
+    public static TeacherEntity teacherJsonToTeacherEntity(String jsonData) {
+        JsonReader reader = Json.createReader(new StringReader(jsonData));
+        JsonObject jsonObject = reader.readObject();
+        TeacherEntity teacher = new TeacherEntity();
+
+        if ( jsonObject.containsKey("foreName")) {
+            teacher.setForeName(jsonObject.getString("foreName"));
+        } else {
+            teacher.setForeName("");
+        }
+
+        if ( jsonObject.containsKey("lastName")) {
+            teacher.setLastName(jsonObject.getString("lastName"));
+        } else {
+            teacher.setLastName("");
+        }
+
+        if ( jsonObject.containsKey("email")) {
+            teacher.setEmail(jsonObject.getString("email"));
+        } else {
+            teacher.setEmail("");
+        }
+
+        return teacher;
     }
 }
