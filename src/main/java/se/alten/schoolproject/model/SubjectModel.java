@@ -1,21 +1,20 @@
 package se.alten.schoolproject.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.Data;
 
-import java.util.HashSet;
+import java.io.Serializable;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SubjectModel {
+public class SubjectModel implements Serializable {
 
-    private Long id;
-    private String title;
-    private Set<String> students = new HashSet<>();
+    private static final long serialVersionUID = 8201375259501590466L;
+
+    private final Long id;
+    private final String title;
+    private final Set<String> students;
+    private final Set<String> teachers;
 
 }
